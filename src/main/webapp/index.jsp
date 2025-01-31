@@ -735,7 +735,7 @@ nav {
     <button id="b">Shop now</button>
 
     <div id="img"><img
-            src="https://www.free-css.com/assets/files/free-css-templates/preview/page291/gamepad/assets/images/img-1.png"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpvKFMxk5lvo4bLyWqVH5O9F194BPNlT_j3zCctyGZvNt3qL48Ohs2Dx9NFnuEtyv-7_k&usqp=CAU"
             height="400px" width="550px" alt=""></div>
 
     <nav>
