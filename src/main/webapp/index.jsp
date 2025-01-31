@@ -735,7 +735,7 @@ nav {
     <button id="b">Shop now</button>
 
     <div id="img"><img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpvKFMxk5lvo4bLyWqVH5O9F194BPNlT_j3zCctyGZvNt3qL48Ohs2Dx9NFnuEtyv-7_k&usqp=CAU"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXj6dqGrZc97n9RDJs4T_g9aTMktOdbetilw&s"
             height="400px" width="550px" alt=""></div>
 
     <nav>
