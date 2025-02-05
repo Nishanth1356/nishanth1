@@ -1,55 +1,57 @@
 pipeline {
     agent any
 
-    tools{
+    tools {
         maven 'maven'
     }
 
-    stages{
-        stage('Check and remove container'){
-            steps{
-                script{
+    stages {
+        stage('Check and remove container') {
+            steps {
+                script {
                     def containerExists = sh(script: "docker ps -q -f name=mbkt", returnStdout: true).trim()
                     if (containerExists) {
-                    sh "docker stop mbkt"
-                    sh "docker rm mbkt"
+                        sh "docker stop mbkt"
+                        sh "docker rm mbkt"
                     }
                 }
             }
         }
-        stage('Build package'){
-            steps{
+        stage('Build package') {
+            steps {
                 sh 'mvn clean package'
             }
         }
-        stage('Create image'){
-            steps{
-                sh 'sudo docker build -t app /var/lib/jenkins/workspace/happydep/'
+        stage('Create image') {
+            steps {
+                sh 'sudo docker build -t app $WORKSPACE'
             }
         }
-        stage('Assign tag'){
-            steps{
+        stage('Assign tag') {
+            steps {
                 sh 'docker tag app nishanth321/dock'
             }
         }
-        stage('Push to dockerhub'){
-            steps{
-                sh 'echo "nishanth321dh" | docker login -u "nishanth321" --password-stdin'
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo "$DOCKER_PASSWORD" | docker login -u "nishanth321" --password-stdin'
+                }
                 sh 'docker push nishanth321/dock'
             }
         }
-        stage('Remove images'){
-            steps{
-                sh 'docker rmi -f $(docker images -q)'
+        stage('Remove images') {
+            steps {
+                sh 'docker rmi -f nishanth321/dock || true'
             }
         }
-        stage('Pull image from DockerHub'){
-            steps{
+        stage('Pull image from DockerHub') {
+            steps {
                 sh 'docker pull nishanth321/dock'
             }
         }
-        stage('Run a container'){
-            steps{
+        stage('Run a container') {
+            steps {
                 sh 'docker run -it -d --name mbkt -p 8081:8080 nishanth321/dock'
             }
         }
@@ -61,9 +63,8 @@ pipeline {
         failure {
             sh 'docker rm -f mbkt'
         }
-        always{
+        always {
             echo 'Deployed'
-              }
-    }
-
+        }
+    }
 }
