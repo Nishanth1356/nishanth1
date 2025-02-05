@@ -35,7 +35,7 @@ pipeline {
         stage('Push to dockerhub'){
             steps{
                 sh 'echo "nishanth321dh" | docker login -u "nishanth321" --password-stdin'
-                sh 'docker push kulashekaralwarn/app'
+                sh 'docker push nishanth321/dock'
             }
         }
         stage('Remove images'){
