@@ -13,6 +13,8 @@ pipeline {
                     if (containerExists) {
                         sh "docker stop mbkt"
                         sh "docker rm mbkt"
+                    } else {
+                        echo "No existing container found"
                     }
                 }
             }
@@ -24,7 +26,7 @@ pipeline {
         }
         stage('Create image') {
             steps {
-                sh 'sudo docker build -t app $WORKSPACE'
+                sh 'docker build -t app $WORKSPACE'
             }
         }
         stage('Assign tag') {
@@ -61,10 +63,17 @@ pipeline {
             echo 'Deployment successful'
         }
         failure {
-            sh 'docker rm -f mbkt'
+            script {
+                def containerExists = sh(script: "docker ps -aq -f name=mbkt", returnStdout: true).trim()
+                if (containerExists) {
+                    sh 'docker rm -f mbkt'
+                } else {
+                    echo "No container found to remove"
+                }
+            }
         }
         always {
-            echo 'Deployed'
+            echo 'Pipeline execution completed'
         }
     }
 }
