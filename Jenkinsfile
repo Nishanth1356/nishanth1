@@ -1,50 +1,69 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'nishanth321/dock'
+    tools{
+        maven 'maven'
     }
 
-    stages {
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t app .'
-            }
-        }
-
-        stage('Tag Docker Image') {
-            steps {
-                sh 'docker tag app ${DOCKER_IMAGE}'
-            }
-        }
-
-        stage('Push to DockerHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'nishanth321dh', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker push ${DOCKER_IMAGE}'
+    stages{
+        stage('Check and remove container'){
+            steps{
+                script{
+                    def containerExists = sh(script: "docker ps -q -f name=nishanth", returnStdout: true).trim()
+                    if (containerExists) {
+                    sh "docker stop nishanth"
+                    sh "docker rm nishanth"
+                    }
                 }
             }
         }
-
-        stage('Remove Local Docker Images') {
-            steps {
-                sh 'docker rmi -f ${DOCKER_IMAGE} || true'
+        stage('Build package'){
+            steps{
+                sh 'mvn clean package'
             }
         }
-
-        stage('Run Docker Container') {
-            steps {
-                sh 'docker run -d --name my_container -p 8080:8080 ${DOCKER_IMAGE}'
+        stage('Create image'){
+            steps{
+                sh 'sudo docker build -t app /var/lib/jenkins/workspace/happydep/'
+            }
+        }
+        stage('Assign tag'){
+            steps{
+                sh 'docker tag app nishanth321/dock'
+            }
+        }
+        stage('Push to dockerhub'){
+            steps{
+                sh 'echo "nishanth321dh" | docker login -u "nishanth321" --password-stdin'
+                sh 'docker push nishanth321/dock'
+            }
+        }
+        stage('Remove images'){
+            steps{
+                sh 'docker rmi -f $(docker images -q)'
+            }
+        }
+        stage('Pull image from DockerHub'){
+            steps{
+                sh 'docker pull nishanth321/dock'
+            }
+        }
+        stage('Run a container'){
+            steps{
+                sh 'docker run -it -d --name nishanth -p 8081:8080 nishanth321/dock'
             }
         }
     }
-
     post {
-        always {
-            script {
-                sh 'docker rm -f my_container || true'
-            }
+        success {
+            echo 'Deployment successful'
         }
-    }
+        failure {
+            sh 'docker rm -f nishanth'
+        }
+        always{
+            echo 'Deployed'
+        }
+    }
+
 }
