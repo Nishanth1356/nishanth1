@@ -1,89 +1,50 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'maven'
-    }
-
     environment {
-        IMAGE_NAME = 'nishanth321/dock'
+        DOCKER_IMAGE = 'nishanth321/dock'
     }
 
     stages {
-        stage('Check and Remove Existing Container') {
-            steps {
-                script {
-                    def containerExists = sh(script: "docker ps -q -f name=mbkt", returnStdout: true).trim()
-                    if (containerExists) {
-                        sh "docker stop mbkt"
-                        sh "docker rm mbkt"
-                    }
-                }
-            }
-        }
-
-        stage('Build Package') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t app /var/lib/jenkins/workspace/happydep/'
+                sh 'docker build -t app .'
             }
         }
 
         stage('Tag Docker Image') {
             steps {
-                sh "docker tag app ${IMAGE_NAME}"
+                sh 'docker tag app ${DOCKER_IMAGE}'
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-password', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh 'echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin'
-                    sh "docker push ${IMAGE_NAME}"
+                withCredentials([usernamePassword(credentialsId: 'nishanth321dh', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push ${DOCKER_IMAGE}'
                 }
             }
         }
 
         stage('Remove Local Docker Images') {
             steps {
-                sh 'docker rmi -f $(docker images -q)'
-            }
-        }
-
-        stage('Pull Image from DockerHub') {
-            steps {
-                sh "docker pull ${IMAGE_NAME}"
+                sh 'docker rmi -f ${DOCKER_IMAGE} || true'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh "docker run -it -d --name mbkt -p 8081:8080 ${IMAGE_NAME}"
+                sh 'docker run -d --name my_container -p 8080:8080 ${DOCKER_IMAGE}'
             }
         }
     }
 
     post {
-        success {
-            echo 'Deployment successful'
-        }
-        failure {
-            script {
-                def containerExists = sh(script: "docker ps -aq -f name=mbkt", returnStdout: true).trim()
-                if (containerExists) {
-                    sh 'docker rm -f mbkt'
-                } else {
-                    echo 'No container found to remove'
-                }
-            }
-        }
         always {
-            echo 'Pipeline execution completed'
+            script {
+                sh 'docker rm -f my_container || true'
+            }
         }
     }
 }
