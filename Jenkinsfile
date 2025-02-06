@@ -29,13 +29,13 @@ pipeline {
         }
         stage('Assign tag'){
             steps{
-                sh 'docker tag app nishanth321/dock'
+                sh 'docker tag app nishanth321/dock1'
             }
         }
         stage('Push to dockerhub'){
             steps{
                 sh 'echo "nishanth321dh" | docker login -u "nishanth321" --password-stdin'
-                sh 'docker push nishanth321/dock'
+                sh 'docker push nishanth321/dock1'
             }
         }
         stage('Remove images'){
@@ -45,12 +45,12 @@ pipeline {
         }
         stage('Pull image from DockerHub'){
             steps{
-                sh 'docker pull nishanth321/dock'
+                sh 'docker pull nishanth321/dock1'
             }
         }
         stage('Run a container'){
             steps{
-                sh 'docker run -it -d --name webapp -p 8081:8080 nishanth321/dock'
+                sh 'docker run -it -d --name webapp -p 8081:8080 nishanth321/dock1'
             }
         }
     }
