@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Create image'){
             steps{
-                sh 'sudo docker build -t app /var/lib/jenkins/workspace/deployment/'
+                sh 'sudo docker build -t app .'
             }
         }
         stage('Assign tag'){
@@ -40,7 +40,7 @@ pipeline {
         }
         stage('Remove images'){
             steps{
-                sh 'docker rmi -f $(docker images -q)'
+                sh 'docker rmi -f nishanth321/dock1'
             }
         }
         stage('Pull image from DockerHub'){
@@ -50,6 +50,7 @@ pipeline {
         }
         stage('Run a container'){
             steps{
+                sh 'docker rm -f webapp'
                 sh 'docker run -it -d --name webapp -p 8081:8080 nishanth321/dock1'
             }
         }
