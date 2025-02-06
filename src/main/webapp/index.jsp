@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Nishanth</title>
     <!-- <link rel="stylesheet" href="home.css"> -->
     <link rel="stylesheet" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTmhmgyASZ21Bp4R7_CHW_9LhbdnwTRwlflw&s">
 </head>
