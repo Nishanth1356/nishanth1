@@ -63,6 +63,6 @@ pipeline {
         }
         always{
             echo 'Deployed'
-        }
-    }
+        }
+    }
 }
