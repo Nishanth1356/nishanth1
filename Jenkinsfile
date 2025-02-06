@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Create image'){
             steps{
-                sh 'sudo docker build -t app .'
+                sh 'docker build -t app .'
             }
         }
         stage('Assign tag'){
