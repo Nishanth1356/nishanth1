@@ -725,7 +725,7 @@ nav {
 </style>
 <body>
     <main>
-        <h1 id="o">Batch_coming soon</h1>
+        <h1 id="o">Video game</h1>
         <h1 id="t">Controller</h1>
         <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in
             some form, by injected humour, or randomised words which don't look even slightly believable</p>
